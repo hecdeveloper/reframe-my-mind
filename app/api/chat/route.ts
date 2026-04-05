@@ -26,36 +26,37 @@ export async function POST(req: Request) {
 
     const systemInstruction = `${coach.systemPrompt}\n\n${CORE_BEHAVIORAL_INSTRUCTIONS}\n\nUser's initial emotion: ${emotion}\nExchange count: ${exchangeCount}`
 
-    console.log('Initializing Gemini with model: gemini-1.5-flash')
+    console.log('Initializing Gemini with model: gemini-2.0-flash')
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      systemInstruction
+      model: 'gemini-2.0-flash'
     })
 
+    // Prepend system instruction to first user message
     const history = messages.slice(0, -1).map((msg: Message) => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }]
     }))
 
-    const chat = model.startChat({ history })
     const lastMessage = messages[messages.length - 1]
+    const messageWithSystem = history.length === 0
+      ? `${systemInstruction}\n\nUser: ${lastMessage.content}`
+      : lastMessage.content
 
-    const result = await chat.sendMessageStream(lastMessage.content)
+    const chat = model.startChat({ history })
 
+    // Use non-streaming generateContent since streamGenerateContent isn't supported
+    const result = await chat.sendMessage(messageWithSystem)
+    const response = await result.response
+    const text = response.text()
+
+    // Return as SSE format for compatibility with frontend
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of result.stream) {
-            const text = chunk.text()
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`))
-          }
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
-          controller.close()
-        } catch (error) {
-          controller.error(error)
-        }
+      start(controller) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`))
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+        controller.close()
       }
     })
 
