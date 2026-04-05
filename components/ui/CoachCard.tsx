@@ -14,11 +14,11 @@ export function CoachCard({ coach, selected, onClick }: CoachCardProps) {
     <button
       onClick={onClick}
       className={cn(
-        'w-full p-6 rounded-2xl border transition-all text-left',
-        'hover:scale-[1.02] active:scale-[0.98]',
+        'w-full p-6 rounded-2xl border-2 transition-all text-left',
+        'hover:scale-[1.01] active:scale-[0.99]',
         selected
-          ? 'border-[var(--accent)] bg-[var(--accent-soft)]'
-          : 'border-[var(--border)] bg-[var(--surface)]'
+          ? 'border-[var(--accent)] bg-[var(--accent-soft)] shadow-lg shadow-[var(--accent)]/20'
+          : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--text-muted)]'
       )}
       style={{
         '--coach-color': coach.color,

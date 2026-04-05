@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { COACHES, CORE_BEHAVIORAL_INSTRUCTIONS } from '@/lib/coaches'
 import { CoachKey, Message } from '@/lib/types'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
   try {

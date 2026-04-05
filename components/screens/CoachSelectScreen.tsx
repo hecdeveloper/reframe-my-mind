@@ -23,7 +23,7 @@ export function CoachSelectScreen({ onSelect }: CoachSelectScreenProps) {
         </p>
       </div>
 
-      <div className="space-y-3 mb-6">
+      <div className="space-y-4 mb-8 flex-1">
         {(Object.keys(COACHES) as CoachKey[]).map((key) => (
           <CoachCard
             key={key}
