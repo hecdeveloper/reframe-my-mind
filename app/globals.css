@@ -22,10 +22,8 @@
   --font-serif: var(--font-dm-serif);
 }
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }
 
 html,
